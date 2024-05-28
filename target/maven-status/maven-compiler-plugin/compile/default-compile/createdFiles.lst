@@ -1,0 +1,16 @@
+com\cadastro\api\util\TransformFieldUppcase.class
+com\cadastro\api\util\base\BaseDados.class
+com\cadastro\api\dao\PessoaDao.class
+com\cadastro\api\controller\PessoaController.class
+com\cadastro\api\resource\App.class
+com\cadastro\api\services\PessoaService$1.class
+com\cadastro\api\domain\Pessoa.class
+com\cadastro\api\util\ConverterType.class
+com\cadastro\api\util\TableUtil$1.class
+com\cadastro\api\imp\GenericDao.class
+com\cadastro\api\services\PessoaService$2.class
+com\cadastro\api\services\PessoaService.class
+com\cadastro\api\util\Message.class
+com\cadastro\api\util\ValidGmail.class
+com\cadastro\api\util\EnterToTab.class
+com\cadastro\api\util\TableUtil.class
