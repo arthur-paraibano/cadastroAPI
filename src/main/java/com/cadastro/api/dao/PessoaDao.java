@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PessoaDao implements GenericDao<Pessoa> {
-
     private Connection con;
     private PreparedStatement stmt;
     private ResultSet rs;
@@ -30,14 +29,48 @@ public class PessoaDao implements GenericDao<Pessoa> {
 
     @Override
     public void update(Pessoa enty) throws SQLException, Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
+        String sql = "UPDATE cadastro.cfg_pessoa SET CFG_NOME = ?, CFG_TELEFONE = ?, CFG_EMAIL = ? WHERE ID =?";
+        this.con = BaseDados.getConnection();
+        this.stmt = con.prepareStatement(sql);
+        this.stmt.setString(1, enty.getNome());
+        this.stmt.setString(2, enty.getTelefone());
+        this.stmt.setString(3, enty.getEmail());
+        this.stmt.setInt(4, enty.getId());
+        this.stmt.executeUpdate();
+        BaseDados.closeConnection(con, stmt, rs);
+    }
+
+    public Pessoa findById(Integer id) throws SQLException, Exception {
+        Pessoa object = null;
+        String sql = "SELECT ID, CFG_NOME, CFG_TELEFONE, CFG_EMAIL FROM cadastro.cfg_pessoa where id = ? ";
+        this.con = BaseDados.getConnection();
+        this.stmt = this.con.prepareStatement(sql);
+        this.stmt.setInt(1, id);
+        this.rs = this.stmt.executeQuery();
+
+        if (this.rs.next()) {
+            object = new Pessoa(
+                    this.rs.getInt("ID"),
+                    this.rs.getString("CFG_NOME"),
+                    this.rs.getString("CFG_TELEFONE"),
+                    this.rs.getString("CFG_EMAIL"));
+        }
+        return object;
     }
 
     @Override
     public void remove(Pessoa enty) throws SQLException, Exception {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'remove'");
+        throw new UnsupportedOperationException("Unimplemented method 'findById'");
+    }
+
+    public void delete(Pessoa enty) throws SQLException, Exception {
+        String sql = "DELETE FROM cfg_pessoa WHERE id = ?";
+        this.con = BaseDados.getConnection();
+        this.stmt = con.prepareStatement(sql);
+        this.stmt.setInt(1, enty.getId());
+        this.stmt.execute();
+        BaseDados.closeConnection(con, stmt);
     }
 
     @Override
@@ -59,19 +92,5 @@ public class PessoaDao implements GenericDao<Pessoa> {
     public Pessoa findById(Pessoa enty) throws SQLException, Exception {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findById'");
-    }
-
-    public List<Pessoa> findAlla() throws SQLException, Exception {
-        List<Pessoa> lista = new ArrayList<>();
-        String sql = "SELECT ID, CFG_NOME AS NOME, CFG_TELEFONE AS TELEFONE, CFG_EMAIL AS EMAIL FROM cadastro.cfg_pessoa ORDER BY NOME ASC";
-        this.con = BaseDados.getConnection();
-        this.stmt = this.con.prepareStatement(sql);
-        this.rs = this.stmt.executeQuery();
-        while (rs.next()) {
-            lista.add(
-                    new Pessoa(rs.getInt("ID"), rs.getString("NOME"), rs.getString("TELEFONE"), rs.getString("EMAIL")));
-        }
-        BaseDados.closeConnection(con, stmt, rs);
-        return lista;
     }
 }

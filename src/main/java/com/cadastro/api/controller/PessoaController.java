@@ -29,12 +29,33 @@ public class PessoaController {
         }
     }
 
-    public List<Pessoa> findAllPessoas() {
+    public boolean insert(Pessoa pessoa) {
         try {
-            return dao.findAlla();
+            dao.add(pessoa);
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
-            return new ArrayList<>();
+            return false;
+        }
+    }
+
+    public boolean update(Pessoa pessoa) {
+        try {
+            dao.update(pessoa);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean delete(Pessoa enty) {
+        try {
+            dao.delete(enty);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }
