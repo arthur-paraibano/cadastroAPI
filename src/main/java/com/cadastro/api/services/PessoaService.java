@@ -8,9 +8,15 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.List;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @Path("pessoa")
@@ -24,10 +30,28 @@ public class PessoaService {
         this.gson = new Gson();
     }
 
+    // http://localhost:8084/cadastroAPI/cadastro/pessoa/list/11
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/listID/{id}")
+    public Response listID(@PathParam("id") int id) {
+        if (id <= 0) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Erro: Informe o ID do Usuário valido.").build();
+        }
+        Pessoa u = new Pessoa();
+        u.setId(id);
+        List<Pessoa> obj = this.pessoaController.listID(u);
+        Type convert = new TypeToken<List<Pessoa>>() {
+        }.getType();
+        String json2 = gson.toJson(obj, convert);
+        return Response.ok(json2).build();
+    }
+
     // http://localhost:8084/cadastroAPI/cadastro/pessoa/list
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("/list")
-    public Response list(String json) {
+    public Response listAll(String json) {
 
         Pessoa u = gson.fromJson(json, Pessoa.class);
         //  if (u != null && u.getNome().equals("admin") && u.getSenha().equals("admin")) {
@@ -43,6 +67,8 @@ public class PessoaService {
 
     // http://localhost:8084/cadastroAPI/cadastro/pessoa/insert
     @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/insert")
     public Response insert(String json) {
         try {
@@ -77,10 +103,12 @@ public class PessoaService {
         }
     }
 
-    // http://localhost:8084/cadastroAPI/cadastro/pessoa/update
-    @POST
-    @Path("/update")
-    private Response update(String json) {
+    // http://localhost:8084/cadastroAPI/cadastro/pessoa/update/15
+    @PUT
+    @Path("/update/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response put(@PathParam("id") int id, String json) {
         try {
             if (json == null || json.isEmpty()) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Erro: O corpo da requisição está vazio.").build();
@@ -89,7 +117,7 @@ public class PessoaService {
             if (pessoa == null) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Erro: Objeto Pessoa não pode ser nulo.").build();
             }
-            if (pessoa.getId() == 0 || pessoa.getNome() == null || pessoa.getEmail() == null || pessoa.getTelefone() == null) {
+            if (pessoa.getNome() == null || pessoa.getEmail() == null || pessoa.getTelefone() == null) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Erro: Preencha todas as informações.").build();
             }
             String telefone = pessoa.getTelefone().replaceAll("[^0-9]", "");
@@ -97,9 +125,8 @@ public class PessoaService {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Erro: O telefone deve conter 11 dígitos.").build();
             }
 
-            pessoa.setId(pessoa.getId());
+            pessoa.setId(id);
             pessoa.setNome(pessoa.getNome().toUpperCase());
-            pessoa.setTelefone(pessoa.getTelefone());
             pessoa.setEmail(pessoa.getEmail().toUpperCase());
 
             boolean result = pessoaController.update(pessoa);
@@ -115,23 +142,18 @@ public class PessoaService {
         }
     }
 
-    // http://localhost:8084/cadastroAPI/cadastro/pessoa/delete
-    @POST
-    @Path("/delete")
-    private Response delete(String json) {
+    // http://localhost:8084/cadastroAPI/cadastro/pessoa/delete/14
+    @DELETE
+    @Path("/delete/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response delete(@PathParam("id") int id) {
         try {
-            if (json == null || json.isEmpty()) {
-                return Response.status(Response.Status.BAD_REQUEST).entity("Erro: O corpo da requisição está vazio.").build();
+            Pessoa pessoa = new Pessoa();
+            pessoa.setId(id);
+            if (id <= 0) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Erro: Informe o ID do Usuário valido.").build();
             }
-            Pessoa pessoa = gson.fromJson(json, Pessoa.class);
-            if (pessoa == null) {
-                return Response.status(Response.Status.BAD_REQUEST).entity("Erro: Objeto Pessoa não pode ser nulo.").build();
-            }
-            if (pessoa.getId() == 0) {
-                return Response.status(Response.Status.BAD_REQUEST).entity("Erro: Preencha o ID do usuário.").build();
-            }
-
-            pessoa.setId(pessoa.getId());
+            pessoa.setId(id);
             boolean result = pessoaController.delete(pessoa);
             if (result) {
                 return Response.ok("Dados excluido!!!").build();

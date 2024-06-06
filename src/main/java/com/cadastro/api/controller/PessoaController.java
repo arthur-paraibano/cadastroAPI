@@ -21,6 +21,14 @@ public class PessoaController {
         }
     }
 
+    public List<Pessoa> listID(Pessoa enty) {
+        try {
+            return dao.findId(enty);
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
     public List<Pessoa> listAll() {
         try {
             return dao.findAll();

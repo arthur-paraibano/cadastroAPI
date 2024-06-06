@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PessoaDao implements GenericDao<Pessoa> {
+
     private Connection con;
     private PreparedStatement stmt;
     private ResultSet rs;
@@ -79,6 +80,21 @@ public class PessoaDao implements GenericDao<Pessoa> {
         String sql = "SELECT ID, CFG_NOME AS NOME, CFG_TELEFONE AS TELEFONE, CFG_EMAIL AS EMAIL FROM cadastro.cfg_pessoa ORDER BY NOME ASC";
         this.con = BaseDados.getConnection();
         this.stmt = this.con.prepareStatement(sql);
+        this.rs = this.stmt.executeQuery();
+        while (rs.next()) {
+            lista.add(
+                    new Pessoa(rs.getInt("ID"), rs.getString("NOME"), rs.getString("TELEFONE"), rs.getString("EMAIL")));
+        }
+        BaseDados.closeConnection(con, stmt, rs);
+        return lista;
+    }
+
+    public List<Pessoa> findId(Pessoa enty) throws SQLException, Exception {
+        List<Pessoa> lista = new ArrayList<>();
+        String sql = "SELECT ID, CFG_NOME AS NOME, CFG_TELEFONE AS TELEFONE, CFG_EMAIL AS EMAIL FROM cadastro.cfg_pessoa where ID = ? ORDER BY NOME ASC";
+        this.con = BaseDados.getConnection();
+        this.stmt = this.con.prepareStatement(sql);
+        this.stmt.setInt(1, enty.getId());
         this.rs = this.stmt.executeQuery();
         while (rs.next()) {
             lista.add(
