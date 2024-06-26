@@ -1,4 +1,4 @@
-# TECHSTOCKMASTER 📜
+# Cadastro API Javax-RS 📜
 
 ## Sobre o projeto
 
